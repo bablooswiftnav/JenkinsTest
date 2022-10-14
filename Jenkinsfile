@@ -30,6 +30,7 @@ pipeline {
         // }
         steps { //it will execute if the when condition is true
           echo 'testing the application...'
+          sh "./main1"
         }
     }
     stage("deploy") {
