@@ -19,7 +19,7 @@ pipeline {
         steps { //it will execute if the when condition is true
           echo 'building the application...'
           echo "building version ${NEW_VERSION}"
-          sh "echo hello"
+          sh "g++ src/main.cpp -o main1" 
         }
     }
     stage("test") {
