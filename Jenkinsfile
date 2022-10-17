@@ -1,56 +1,38 @@
-// CODE_CHANGES = getGitChanges() //groovy scripts to check changes
 pipeline {
-    /* insert Declarative Pipeline here */
   agent any
 
-  environment { //define own environment variabls, it will be available for all stages in this file
-      //got to url for predefined variables http://localhost:8080/env-vars.html/
-
-      NEW_VERSION = '1.0.1'
+    //Parametrize your Build
+    // select version of the application you want to deploy
+  parameters {
+//     string(name: 'VERSION', defaultValue: '', description: 'version to deploy ob prod')
+    choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
+    booleanParam(name: 'executeTests', defaultValue: true, description: '')
   }
 
   stages {
     stage("build") { 
-        // when { //conditions
-        //     expression {
-        //         BRANCH_NAME = 'main' && CODE_CHANGES ==true
-        //     }
-        // }
         steps { //it will execute if the when condition is true
           echo 'building the application...'
-          echo "building version ${NEW_VERSION}"
-          sh "g++ src/main.cpp -o main1" 
+          sh "g++ src/main.cpp -o build/main" 
         }
     }
     stage("test") {
-        // when { //conditions
-        //     expression {
-        //         BRANCH_NAME = 'main' || BRANCH_NAME = 'master'
-        //     }
-        // }
+        when { //conditions
+            expression {
+                params.executeTests
+            }
+        }
+
         steps { //it will execute if the when condition is true
           echo 'testing the application...'
-          sh "./main1"
+          sh "./build/main"
         }
     }
     stage("deploy") {
         steps {
           echo 'deploying the application...'
+          echo "deploying version ${VERSION}"
         }
     }
-
-    // //Build status and Build status change
-    // post {  //it will execute after all stages executed
-    //   always {
-    //     //it will be executed always, no matter build failed or success
-    //     //sending an email to team for failed or success status
-    //   }
-    //   success {
-    //     //it will run if the build success
-    //   }
-    //   failure {
-    //     //it will run if the build failure
-    //   }
-    // }
   }
 }
